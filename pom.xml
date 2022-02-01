@@ -10,9 +10,10 @@
     <groupId>com.example</groupId>
     <artifactId>gulimall</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+
     <name>gulimall</name>
     <description>聚合服务</description>
-   <packaging>pom</packaging>
+    <packaging>pom</packaging>
 
     <modules>
         <module>gulimall-ware</module>
@@ -20,17 +21,54 @@
         <module>gulimall-coupon</module>
         <module>gulimall-order</module>
         <module>gulimall-member</module>
+        <module>renren-fast</module>
+        <module>renren-generator</module>
+        <module>gulimall-common</module>
     </modules>
     <properties>
+        <spring-boot-starter-version>2.4.2</spring-boot-starter-version>
         <spring-cloud-version>2020.0.1</spring-cloud-version>
+        <spring-cloud-alibaba-version>2021.1</spring-cloud-alibaba-version>
+        <mybatis-plus-version>3.3.1</mybatis-plus-version>
+        <lombok-version>1.18.4</lombok-version>
+        <common-version>2.6</common-version>
+        <httpcore-version>4.4.13</httpcore-version>
+        <mysql-connector-java-version>8.0.17</mysql-connector-java-version>
+        <junit-version>4.12</junit-version>
+        <druid-version>1.1.13</druid-version>
     </properties>
     <dependencyManagement>
         <dependencies>
+<!--            druid-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid-version}</version>
+            </dependency>
+<!--            spring-boot-test-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring-boot-starter-version}</version>
+            </dependency>
+<!--            junit-->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit-version}</version>
+                <scope>test</scope>
+            </dependency>
+<!--            actuator-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+                <version>${spring-boot-starter-version}</version>
+            </dependency>
 <!--        spring cloud aibaba-->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>2021.1</version>
+                <version>${spring-cloud-alibaba-version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -41,6 +79,42 @@
                 <version>${spring-cloud-version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+<!--            mybatis-plus-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus-version}</version>
+            </dependency>
+<!--lombok-->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok-version}</version>
+            </dependency>
+<!--            commons-lang-->
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${common-version}</version>
+            </dependency>
+<!--            commons-io-->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${common-version}</version>
+            </dependency>
+<!--            httpcore-->
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${httpcore-version}</version>
+            </dependency>
+<!--            mysql-connector-->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector-java-version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
