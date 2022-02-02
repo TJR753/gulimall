@@ -20,4 +20,4 @@ mybatis-plus:
       id-type: auto
   mapper-locations: classpath:/mapper/**/*.xml
 server:
-  port: 5000
+  port: 7000

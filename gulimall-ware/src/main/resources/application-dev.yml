@@ -21,4 +21,4 @@ mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
 
 server:
-  port: 9000
+  port: 11000
