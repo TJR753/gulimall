@@ -1,27 +1,27 @@
 spring:
   application:
     name: gulimall-member
-  cloud:
-    nacos:
-      config:
-        file-extension: yaml
-        server-addr: localhost:8848
-        namespace: c5d265e3-b307-48a0-b6f2-02dfd3c67245
-        extension-configs[0]:
-          data-id: datasource.yml
-          group: dev
-          refresh: true
-        extension-configs[1]:
-          data-id: mybatis.yml
-          group: dev
-          refresh: true
-        extension-configs[2]:
-          data-id: other.yml
-          group: dev
-          refresh: true
-        extension-configs[3]:
-          data-id: test.yml
-          group: dev
-          refresh: true
+#  cloud:
+#    nacos:
+#      config:
+#        file-extension: yaml
+#        server-addr: localhost:8848
+#        namespace: c5d265e3-b307-48a0-b6f2-02dfd3c67245
+#        extension-configs[0]:
+#          data-id: datasource.yml
+#          group: dev
+#          refresh: true
+#        extension-configs[1]:
+#          data-id: mybatis.yml
+#          group: dev
+#          refresh: true
+#        extension-configs[2]:
+#          data-id: other.yml
+#          group: dev
+#          refresh: true
+#        extension-configs[3]:
+#          data-id: test.yml
+#          group: dev
+#          refresh: true
   profiles:
     active: dev

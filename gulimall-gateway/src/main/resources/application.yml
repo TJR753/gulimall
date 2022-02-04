@@ -6,7 +6,7 @@ spring:
       discovery:
         server-addr: localhost:8848
         group: dev
-        namespace: 8c84bf3c-623a-4d24-b34d-5cc0750b8619
+#        namespace: 8c84bf3c-623a-4d24-b34d-5cc0750b8619
     gateway:
       routes:
         - id: test_route
@@ -17,6 +17,28 @@ spring:
           uri: https://qq.com
           predicates:
           - Query=url,qq
+#          前端项目，带有api前缀
+        - id: product_route
+          uri: lb://gulimall-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /renren-fast/$\{segment}
+
+  #采样率，1为全部采集=1
+  sleuth:
+    sampler:
+      probability: 1
+  zipkin:
+    base-url: http://localhost:9411
+    sender:
+      type: web
 server:
   port: 88
 

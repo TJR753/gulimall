@@ -9,6 +9,11 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+        group: dev
+      config:
+        server-addr: localhost:8848
+        group: dev
+        namespace: 371e6d6a-0447-4c5e-8f55-fa6b71f370d6
   application:
     name: gulimall-product
   devtools:
@@ -18,7 +23,11 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+      logic-delete-value: 1
+      logic-not-delete-value: 0
   mapper-locations: classpath:/mapper/**/*.xml
-
 server:
   port: 10000
+logging:
+  level:
+   com.example.gulimall.product.dao: debug

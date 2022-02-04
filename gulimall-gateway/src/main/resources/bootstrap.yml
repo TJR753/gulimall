@@ -1,13 +1,13 @@
 spring:
   application:
     name: gulimall-gateway
-  cloud:
-    nacos:
-      config:
-        server-addr: localhost:8848
-        file-extension: yaml
-        namespace: 8c84bf3c-623a-4d24-b34d-5cc0750b8619
-        extension-configs[0]:
-          data-id: application.yml
-          group: dev
-          refresh: true
+#  cloud:
+#    nacos:
+#      config:
+#        server-addr: localhost:8848
+#        file-extension: yaml
+#        namespace: 8c84bf3c-623a-4d24-b34d-5cc0750b8619
+#        extension-configs[0]:
+#          data-id: application.yml
+#          group: dev
+#          refresh: true
