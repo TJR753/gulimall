@@ -8,10 +8,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @SpringBootApplication
 @MapperScan(value = "com/example/gulimall/product/dao")
 @EnableDiscoveryClient
-public class GulimallProductApplication {
+public class GuliMallProductApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GulimallProductApplication.class, args);
+        SpringApplication.run(GuliMallProductApplication.class, args);
     }
 
 }
