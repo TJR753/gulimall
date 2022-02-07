@@ -24,6 +24,13 @@ spring:
             - Path=/api/product/**
           filters:
             - RewritePath=/api/?(?<segment>.*), /$\{segment}
+        - id: oss_route
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/oss/**
+          filters:
+            - RewritePath=/api/?(?<segment>.*), /$\{segment}
+
         - id: admin_route
           uri: lb://renren-fast
           predicates:

@@ -25,6 +25,7 @@
         <module>renren-generator</module>
         <module>gulimall-common</module>
         <module>gulimall-gateway</module>
+        <module>gulimall-third-party</module>
     </modules>
     <properties>
         <spring-boot-starter-version>2.4.2</spring-boot-starter-version>
@@ -40,7 +41,13 @@
     </properties>
     <dependencyManagement>
         <dependencies>
-<!--            druid-->
+<!--            oss-->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alicloud-oss</artifactId>
+                <version>2.2.0.RELEASE</version>
+            </dependency>
+            <!--            druid-->
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
