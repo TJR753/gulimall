@@ -5,5 +5,9 @@ spring:
         namespace: 94e96d59-09e5-41a5-944b-a9c1d9e46c26
         server-addr: localhost:8848
         group: dev
+        extension-configs[0]:
+          data-id: aliyun.yml
+          group: dev
+          refresh: true
   application:
     name: gulimall-third-party
