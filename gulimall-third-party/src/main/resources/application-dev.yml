@@ -1,0 +1,17 @@
+#配置数据源
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        group: dev
+    alicloud:
+#      LTAI5tDDcDW4EbpLGjm5QBzm
+#      l1dFBvS2r3bCmdWBaPrMDQZch2dLL4
+      access-key: LTAI5tDDcDW4EbpLGjm5QBzm
+      secret-key: l1dFBvS2r3bCmdWBaPrMDQZch2dLL4
+      bucket: gulimall-oss-tjr
+      oss:
+        endpoint: oss-cn-hangzhou.aliyuncs.com
+server:
+  port: 30000
