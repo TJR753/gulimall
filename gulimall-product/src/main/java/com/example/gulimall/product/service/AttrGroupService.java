@@ -24,5 +24,7 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
      * @return
      */
     PageUtils queryPageById(Map<String, Object> params, Long catId);
+
+    void updateByDetail(AttrGroupEntity attrGroup);
 }
 

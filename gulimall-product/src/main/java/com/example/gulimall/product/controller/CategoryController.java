@@ -30,7 +30,7 @@ public class CategoryController {
     /**
      * 所有商品信息树
      */
-    @RequestMapping("/list/menu")
+    @RequestMapping("/list/tree")
     public R list(){
         List<CategoryEntity> data=categoryService.listMenu();
         return R.ok().put("data", data);
@@ -71,7 +71,7 @@ public class CategoryController {
      */
     @RequestMapping("/update")
     public R update(@RequestBody CategoryEntity category){
-		categoryService.updateById(category);
+		categoryService.updateDetail(category);
 
         return R.ok();
     }

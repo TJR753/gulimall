@@ -1,7 +1,10 @@
 package com.example.gulimall.product.dao;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.gulimall.product.entity.AttrEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.gulimall.product.vo.AttrEntityVo;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -13,5 +16,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface AttrDao extends BaseMapper<AttrEntity> {
-	
+
 }

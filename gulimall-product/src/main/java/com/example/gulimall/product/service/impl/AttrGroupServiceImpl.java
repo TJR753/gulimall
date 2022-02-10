@@ -1,6 +1,14 @@
 package com.example.gulimall.product.service.impl;
 
+import com.example.gulimall.product.dao.AttrAttrgroupRelationDao;
+import com.example.gulimall.product.dao.AttrDao;
+import com.example.gulimall.product.entity.AttrAttrgroupRelationEntity;
+import com.example.gulimall.product.entity.AttrEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -15,6 +23,11 @@ import com.example.gulimall.product.service.AttrGroupService;
 
 @Service("attrGroupService")
 public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEntity> implements AttrGroupService {
+
+    @Autowired
+    private AttrAttrgroupRelationDao attrAttrgroupRelationDao;
+    @Autowired
+    private AttrDao attrDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -44,4 +57,24 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         );
         return new PageUtils(page);
     }
+
+
+    @Override
+    public void updateByDetail(AttrGroupEntity attrGroup) {
+        updateById(attrGroup);
+        //查找关联分组的所有属性，进行修改catelogId
+        List<AttrAttrgroupRelationEntity> list = attrAttrgroupRelationDao.selectList(
+                new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id", attrGroup.getAttrGroupId())
+        );
+        if(list!=null){
+            list.forEach((entity)->{
+                AttrEntity attrEntity = attrDao.selectOne(
+                        new QueryWrapper<AttrEntity>().eq("attr_id", entity.getAttrId()));
+                attrEntity.setCatelogId(attrGroup.getCatelogId());
+                attrDao.updateById(attrEntity);
+            });
+        }
+    }
+
+
 }

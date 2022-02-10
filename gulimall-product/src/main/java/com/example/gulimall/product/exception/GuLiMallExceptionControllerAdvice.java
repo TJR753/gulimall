@@ -26,7 +26,9 @@ public class GuLiMallExceptionControllerAdvice {
     }
     @ExceptionHandler
     public R handleException(Exception e){
-        log.error("错误原因："+e.getCause()+"\n"+"错误类型："+e.getClass()+"\n"+"错误信息："+e.getMessage());
+        log.error("错误原因："+e.getCause()+"\n"+"错误类型："+e.getClass()+"\n"+"错误信息："+e.getMessage()
+        +"\n"+"错误位置："+e.getStackTrace()[0].getLineNumber()+":"+e.getStackTrace()[0].getMethodName());
+        log.error(e.toString());
         return R.error(BizCodeEnum.UNKNOW_EXCEPTION.getCode(),BizCodeEnum.UNKNOW_EXCEPTION.getMsg());
     }
 }

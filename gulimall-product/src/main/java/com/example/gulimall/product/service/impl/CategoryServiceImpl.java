@@ -1,5 +1,9 @@
 package com.example.gulimall.product.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.example.gulimall.product.entity.CategoryBrandRelationEntity;
+import com.example.gulimall.product.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -20,6 +24,9 @@ import com.example.gulimall.product.service.CategoryService;
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    private CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -67,5 +74,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     public int removeMenuByIds(List<Long> asList) {
         //TODO 检查被引用的菜单项，无法被删除
         return baseMapper.deleteBatchIds(asList);
+    }
+
+    @Override
+    public void updateDetail(CategoryEntity category) {
+        this.updateById(category);
+        CategoryBrandRelationEntity categoryBrandRelationEntity = new CategoryBrandRelationEntity();
+        categoryBrandRelationEntity.setCatelogName(category.getName());
+        categoryBrandRelationService.update(categoryBrandRelationEntity,new UpdateWrapper<CategoryBrandRelationEntity>().eq("catelog_id",category.getCatId()));
     }
 }
