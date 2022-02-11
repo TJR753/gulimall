@@ -2,22 +2,16 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.56.10:3306/gulimall_sms?serverTimrzone=GMT
+    url: jdbc:mysql://192.168.56.10:3306/gulimall_ums?serverTimrzone=GMT
     username: root
     password: root
   cloud:
     nacos:
       discovery:
         server-addr: localhost:8848
-        namespace: c5d265e3-b307-48a0-b6f2-02dfd3c67245
         group: dev
-      config:
-        server-addr: localhost:8848
   application:
     name: gulimall-member
-  devtools:
-    restart:
-      enabled: true
 mybatis-plus:
   global-config:
     db-config:

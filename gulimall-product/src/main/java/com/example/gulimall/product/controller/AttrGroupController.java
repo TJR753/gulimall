@@ -11,6 +11,7 @@ import com.example.gulimall.product.entity.AttrEntity;
 import com.example.gulimall.product.entity.CategoryEntity;
 import com.example.gulimall.product.service.AttrAttrgroupRelationService;
 import com.example.gulimall.product.service.CategoryService;
+import com.example.gulimall.product.vo.AttrRelationEntityVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -126,9 +127,22 @@ public class AttrGroupController {
         attrAttrgroupRelationService.saveDetail(relationEntityList);
         return R.ok();
     }
+
+    /**
+     * 删除attr和attrgroup的relation
+     * @param relationEntityList
+     * @return
+     */
     @PostMapping(path="/attr/relation/delete")
     public R deleteRelation(@RequestBody List<AttrAttrgroupRelationEntity> relationEntityList){
         attrAttrgroupRelationService.deleteDetail(relationEntityList);
         return R.ok();
     }
+
+    @GetMapping(path="/{catelogId}/withattr")
+    public R getAllRelation(@PathVariable("catelogId")Long catId){
+        List<AttrRelationEntityVo> list=attrAttrgroupRelationService.getRelationByCatelogId(catId);
+        return R.ok().put("data",list);
+    }
+
 }

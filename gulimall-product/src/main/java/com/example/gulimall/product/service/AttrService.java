@@ -22,6 +22,11 @@ public interface AttrService extends IService<AttrEntity> {
 
     void saveVo(AttrEntityVo attr);
 
+    /**
+     *
+     * @param attrId 属性id
+     * @return
+     */
     AttrEntityVo getInfo(Long attrId);
 
     void updateDetail(AttrEntityVo attr);

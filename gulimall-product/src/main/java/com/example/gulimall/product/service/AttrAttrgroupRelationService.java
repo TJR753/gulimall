@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.common.utils.PageUtils;
 import com.example.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.example.gulimall.product.entity.AttrEntity;
+import com.example.gulimall.product.vo.AttrRelationEntityVo;
 
 import java.util.List;
 import java.util.Map;
@@ -26,5 +27,7 @@ public interface AttrAttrgroupRelationService extends IService<AttrAttrgroupRela
     void saveDetail(List<AttrAttrgroupRelationEntity> relationEntityList);
 
     void deleteDetail(List<AttrAttrgroupRelationEntity> relationEntityList);
+
+    List<AttrRelationEntityVo> getRelationByCatelogId(Long catId);
 }
 

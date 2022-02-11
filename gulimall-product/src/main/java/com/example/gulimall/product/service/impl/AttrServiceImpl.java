@@ -55,9 +55,13 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         if(catelogId!=0){
             wrapper.eq("catelog_id",catelogId);
         }
+        String key=(String)params.get("key");
+        if(key!=null){
+            wrapper.like("attr_name",key);
+        }
         IPage<AttrEntity> page = this.page(
                 new Query<AttrEntity>().getPage(params),
-                wrapper.like("attr_name",(String)params.get("key"))
+                wrapper
         );
         PageUtils pageUtils = new PageUtils(page);
         //替换分页list

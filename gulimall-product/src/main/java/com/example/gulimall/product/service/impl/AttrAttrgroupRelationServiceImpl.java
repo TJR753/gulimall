@@ -14,7 +14,11 @@ import com.example.gulimall.product.dao.AttrDao;
 import com.example.gulimall.product.dao.AttrGroupDao;
 import com.example.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.example.gulimall.product.entity.AttrEntity;
+import com.example.gulimall.product.entity.AttrGroupEntity;
 import com.example.gulimall.product.service.AttrAttrgroupRelationService;
+import com.example.gulimall.product.vo.AttrRelationEntityVo;
+import com.example.gulimall.product.vo.AttrVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service("attrAttrgroupRelationService")
 public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupRelationDao, AttrAttrgroupRelationEntity> implements AttrAttrgroupRelationService {
@@ -55,19 +60,24 @@ public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupR
     @Override
     @Transactional
     public PageUtils listNoRelation(Map<String, Object> params, Long attrGroupId) {
-        List<AttrAttrgroupRelationEntity> listRelation = list(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id", attrGroupId));
-        List<Long> relationIds = listRelation.stream().map((entity) -> {
-            return entity.getAttrId();
-        }).collect(Collectors.toList());
-        QueryWrapper<AttrEntity> wrapper = new QueryWrapper<>();
+        //只能关联规格参数
+        QueryWrapper<AttrEntity> wrapper = new QueryWrapper<AttrEntity>().eq("attr_type",1);
+        //模糊查询
         String key = (String)params.get("key");
         if(key!=null){
-            wrapper.like("attr_name",key);
+            wrapper.and((obj->{
+                obj.like("attr_name",key).or().like("attr_id",key);
+            }));
         }
-        IPage<AttrEntity> page = attrDao.selectPage(
-                new Query<AttrEntity>().getPage(params),
-                wrapper.and((obj)->{obj.notIn("attr_id", relationIds);}));
-        return new PageUtils(page);
+        List<AttrAttrgroupRelationEntity> relationList = list();
+        List<Long> relationIds = relationList.stream().map(AttrAttrgroupRelationEntity::getAttrId).collect(Collectors.toList());
+        wrapper.and((obj)->{
+            obj.notIn("attr_id",relationIds);
+        });
+        IPage<AttrEntity> attrEntityIPage = attrDao.selectPage(
+                new Query<AttrEntity>().getPage(params), wrapper
+        );
+        return new PageUtils(attrEntityIPage);
     }
 
     @Override
@@ -88,5 +98,26 @@ public class AttrAttrgroupRelationServiceImpl extends ServiceImpl<AttrAttrgroupR
                     .eq("attr_id",relationEntity.getAttrId())
                     .eq("attr_group_id",relationEntity.getAttrGroupId()));
         }));
+    }
+
+    @Override
+    @Transactional
+    public List<AttrRelationEntityVo> getRelationByCatelogId(Long catId) {
+        List<AttrGroupEntity> attrGroupEntityList = attrGroupDao.selectList(new QueryWrapper<AttrGroupEntity>().eq("catelog_id", catId));
+        //查出分类id下的分组id
+        return attrGroupEntityList.stream().map((entity) -> {
+            AttrRelationEntityVo vo = new AttrRelationEntityVo();
+            BeanUtils.copyProperties(entity, vo);
+            //根据分组id查出规格参数，销售属性
+            List<AttrAttrgroupRelationEntity> relationEntityList = list(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id", entity.getAttrGroupId()));
+            List<AttrVo> attrVoList = relationEntityList.stream().map((relationEntity) -> {
+                AttrEntity attrEntity = attrDao.selectById(relationEntity.getAttrId());
+                AttrVo attrVo = new AttrVo();
+                BeanUtils.copyProperties(attrEntity, attrVo);
+                return attrVo;
+            }).collect(Collectors.toList());
+            vo.setAttrs(attrVoList);
+            return vo;
+        }).collect(Collectors.toList());
     }
 }
