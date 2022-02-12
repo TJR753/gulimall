@@ -28,6 +28,36 @@ public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
 
+    //TODO 完成采购
+
+    /**
+     * 合并采购单
+     * @param mergeVo
+     * @return
+     */
+    @PostMapping("/merge")
+    public R merge(@RequestBody MergeVo mergeVo){
+        purchaseService.merge(mergeVo);
+        return R.ok();
+    }
+
+    /**
+     * 领取采购单
+     * @param ids 采购单id
+     * @return
+     */
+    @PostMapping("/receive")
+    public R receive(@RequestBody List<Long> ids){
+        purchaseService.receive(ids);
+        return R.ok();
+    }
+
+    @RequestMapping("/unreceive/list")
+    public R unreceiveList(@RequestParam Map<String, Object> params){
+        PageUtils page = purchaseService.queryPageUnreceive(params);
+
+        return R.ok().put("page", page);
+    }
     /**
      * 列表
      */
@@ -54,7 +84,7 @@ public class PurchaseController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody PurchaseEntity purchase){
-		purchaseService.save(purchase);
+		purchaseService.saveDetail(purchase);
 
         return R.ok();
     }

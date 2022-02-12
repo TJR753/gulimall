@@ -49,8 +49,7 @@ public class PurchaseDetailServiceImpl extends ServiceImpl<PurchaseDetailDao, Pu
             wrapper.eq("ware_id",wareId);
         }
         IPage<PurchaseDetailEntity> page = this.page(
-                new Query<PurchaseDetailEntity>().getPage(params),
-                new QueryWrapper<PurchaseDetailEntity>()
+                new Query<PurchaseDetailEntity>().getPage(params),wrapper
         );
 
         return new PageUtils(page);
