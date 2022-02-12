@@ -1,20 +1,13 @@
-package com.example.gulimall.product.vo;
+package com.example.common.to;
 
-import com.example.common.to.MemberPrice;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class Skus {
-    private List<Attr> attr;
-    private String skuName;
-    private BigDecimal price;
-    private String skuTitle;
-    private String skuSubtitle;
-    private List<Image> images;
-    private List<String> descar;
+public class SkuReductionTo {
+    private Long skuId;
     private Integer fullCount;
     private BigDecimal discount;
     private Integer countStatus;

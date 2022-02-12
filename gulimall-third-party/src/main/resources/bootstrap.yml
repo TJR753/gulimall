@@ -11,3 +11,5 @@ spring:
           refresh: true
   application:
     name: gulimall-third-party
+  profiles:
+    active: dev

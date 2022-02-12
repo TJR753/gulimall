@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: gulimall-ware
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+        group: dev
+        namespace: 7637a173-0e7c-4d7f-8bef-f66f46744173

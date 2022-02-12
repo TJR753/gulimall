@@ -1,6 +1,9 @@
 package com.example.gulimall.product.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -21,6 +24,53 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         IPage<SkuInfoEntity> page = this.page(
                 new Query<SkuInfoEntity>().getPage(params),
                 new QueryWrapper<SkuInfoEntity>()
+        );
+
+        return new PageUtils(page);
+    }
+
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        QueryWrapper<SkuInfoEntity> wrapper = new QueryWrapper<>();
+        String key = (String) params.get("key");
+        if(StringUtils.isNotEmpty(key)){
+            wrapper.and((w)->{
+                w.eq("sku_id",key).or().like("sku_name",key);
+            });
+        }
+        String brandId = (String) params.get("brandId");
+        if(StringUtils.isNotEmpty(brandId)&&!"0".equals(brandId)){
+            wrapper.eq("brand_id",brandId);
+        }
+
+        String catelogId = (String) params.get("catelogId");
+        if(StringUtils.isNotEmpty(catelogId)&&!"0".equals(brandId)){
+            wrapper.eq("catalog_id",catelogId);
+        }
+        String max = (String) params.get("max");
+        String min = (String) params.get("min");
+        if(StringUtils.isNotEmpty(max)){
+            try{
+                BigDecimal bigDecimal = new BigDecimal(max);
+                if (bigDecimal.compareTo(new BigDecimal(0))!=0) {
+                    wrapper.le("price",Integer.parseInt(max));
+                }
+            }catch (Exception e){
+
+            }
+        }
+        if(StringUtils.isNotEmpty(min)){
+            try{
+                BigDecimal bigDecimal = new BigDecimal(min);
+                if (bigDecimal.compareTo(new BigDecimal(0))!=0) {
+                    wrapper.ge("price",Integer.parseInt(min));
+                }
+            }catch (Exception e){
+
+            }
+        }
+        IPage<SkuInfoEntity> page = this.page(
+                new Query<SkuInfoEntity>().getPage(params),wrapper
         );
 
         return new PageUtils(page);

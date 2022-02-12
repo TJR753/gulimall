@@ -9,8 +9,8 @@ import java.util.List;
 public class SpuSaveVo {
     private String spuName;
     private String spuDescription;
-    private Long catalogID;
-    private Long brandID;
+    private Long catalogId;
+    private Long brandId;
     private BigDecimal weight;
     private Integer publishStatus;
     private List<String> decript;

@@ -9,11 +9,11 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+        group: dev
   application:
     name: gulimall-ware
-  devtools:
-    restart:
-      enabled: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 mybatis-plus:
   global-config:
     db-config:
@@ -22,4 +22,7 @@ mybatis-plus:
 
 server:
   port: 11000
+logging:
+  level:
+    com.example.gulimall.ware.dao: debug
 

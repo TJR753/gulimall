@@ -56,7 +56,7 @@ public class PurchaseDetailController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody PurchaseDetailEntity purchaseDetail){
-		purchaseDetailService.save(purchaseDetail);
+		purchaseDetailService.saveDetail(purchaseDetail);
 
         return R.ok();
     }

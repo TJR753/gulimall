@@ -10,7 +10,7 @@ public class AttrRelationEntityVo {
     private Integer sort;
     private String descript;
     private String icon;
-    private Long catelogID;
+    private Long catelogId;
     private List<AttrVo> attrs;
 }
 

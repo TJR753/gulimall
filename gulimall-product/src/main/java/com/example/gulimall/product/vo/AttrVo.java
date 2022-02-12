@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class AttrVo {
-    private Long attrID;
+    private Long attrId;
     private String attrName;
     private Long searchType;
     private Long valueType;
@@ -12,7 +12,7 @@ public class AttrVo {
     private String valueSelect;
     private Integer attrType;
     private Long enable;
-    private Long catelogID;
+    private Long catelogId;
     private Integer showDesc;
-    private Long attrGroupID;
+    private Long attrGroupId;
 }
