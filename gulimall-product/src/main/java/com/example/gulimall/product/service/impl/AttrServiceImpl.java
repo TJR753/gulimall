@@ -6,6 +6,8 @@ import com.example.gulimall.product.dao.AttrGroupDao;
 import com.example.gulimall.product.dao.CategoryDao;
 import com.example.gulimall.product.entity.AttrAttrgroupRelationEntity;
 import com.example.gulimall.product.entity.CategoryEntity;
+import com.example.gulimall.product.entity.ProductAttrValueEntity;
+import com.example.gulimall.product.service.ProductAttrValueService;
 import com.example.gulimall.product.vo.AttrEntityVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,8 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     private AttrGroupDao attrGroupDao;
     @Autowired
     private CategoryDao categoryDao;
+    @Autowired
+    private ProductAttrValueService productAttrValueService;
 
     @Override
     @Transactional
@@ -153,6 +157,25 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
                 attrAttrgroupRelationDao.updateById(attrGroupRelationEntity);
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public List<ProductAttrValueEntity> listForSpu(Long spuId) {
+        return productAttrValueService.getBaseMapper()
+                .selectList(new QueryWrapper<ProductAttrValueEntity>().eq("spu_id", spuId));
+    }
+
+    @Override
+    @Transactional
+    public void updateBySpuId(Long spuId, List<ProductAttrValueEntity> list) {
+        //移除原有的数据，在新增
+        productAttrValueService.remove(new QueryWrapper<ProductAttrValueEntity>().eq("spu_id",spuId));
+        List<ProductAttrValueEntity> collect = list.stream().map((productAttrValueEntity) -> {
+            productAttrValueEntity.setSpuId(spuId);
+            return productAttrValueEntity;
+        }).collect(Collectors.toList());
+        productAttrValueService.saveBatch(collect);
     }
 
 }

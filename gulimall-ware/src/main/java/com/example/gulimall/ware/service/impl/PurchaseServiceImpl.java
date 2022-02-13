@@ -1,8 +1,15 @@
 package com.example.gulimall.ware.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.example.common.constant.WareConstant;
+import com.example.common.utils.R;
 import com.example.gulimall.ware.entity.PurchaseDetailEntity;
+import com.example.gulimall.ware.entity.WareSkuEntity;
+import com.example.gulimall.ware.feign.ProductFeignService;
 import com.example.gulimall.ware.service.PurchaseDetailService;
+import com.example.gulimall.ware.service.WareSkuService;
+import com.example.gulimall.ware.vo.DoneVo;
+import com.example.gulimall.ware.vo.Item;
 import com.example.gulimall.ware.vo.MergeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +36,10 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
 
     @Autowired
     private PurchaseDetailService purchaseDetailService;
+    @Autowired
+    private WareSkuService wareSkuService;
+    @Autowired
+    private ProductFeignService productFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -105,6 +116,55 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         this.updateBatchById(purchaseEntityList);
         //更新采购单里的采购项
         purchaseDetailService.updateBatchByPurchaseId(purchaseEntityList);
+    }
+
+    @Override
+    @Transactional
+    public void purchaseDone(DoneVo doneVo) {
+        //全部成功，才算成功
+        List<Item> items = doneVo.getItems();
+        Boolean flag=true;
+        for(Item item:items){
+            if(item.getStatus()==4){
+                flag=false;
+            }
+            PurchaseDetailEntity purchaseDetailEntity = new PurchaseDetailEntity();
+            purchaseDetailEntity.setId(item.getItemId());
+            purchaseDetailEntity.setStatus(item.getStatus());
+            purchaseDetailService.updateById(purchaseDetailEntity);
+            //成功的入库
+            if(item.getStatus()==WareConstant.PurchaseStatusEnum.FINISHED.getCode()){
+                PurchaseDetailEntity purchaseDetail = purchaseDetailService.getById(item.getItemId());
+                WareSkuEntity wareSkuEntity = wareSkuService.getOne(new QueryWrapper<WareSkuEntity>().eq("sku_id", purchaseDetail.getSkuId()).eq("ware_id", purchaseDetail.getWareId()));
+                if(wareSkuEntity!=null){
+                    wareSkuEntity.setStock(wareSkuEntity.getStock()+purchaseDetail.getSkuNum());
+                    wareSkuService.update(wareSkuEntity,new UpdateWrapper<WareSkuEntity>().eq("id",wareSkuEntity.getId()));
+                }else{
+                    wareSkuEntity=new WareSkuEntity();
+                    wareSkuEntity.setSkuId(purchaseDetail.getSkuId());
+                    wareSkuEntity.setWareId(purchaseDetail.getWareId());
+                    wareSkuEntity.setStock(purchaseDetail.getSkuNum());
+                    wareSkuEntity.setStockLocked(0);
+                    //设置名字
+                    try{
+                        R info = productFeignService.info(wareSkuEntity.getSkuId());
+                        Map<String,Object> skuInfo = (Map<String,Object>)info.get("skuInfo");
+                        wareSkuEntity.setSkuName((String) skuInfo.get("skuName"));
+                    }catch (Exception e){
+
+                    }
+                    wareSkuService.save(wareSkuEntity);
+                }
+            }
+        }
+        PurchaseEntity purchaseEntity = new PurchaseEntity();
+        purchaseEntity.setId(doneVo.getId());
+        if(flag){
+            purchaseEntity.setStatus(WareConstant.PurchaseStatusEnum.FINISHED.getCode());
+        }else{
+            purchaseEntity.setStatus(WareConstant.PurchaseStatusEnum.FAILED.getCode());
+        }
+        this.updateById(purchaseEntity);
     }
 
 }

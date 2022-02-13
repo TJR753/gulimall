@@ -1,9 +1,11 @@
 package com.example.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.example.common.constant.ProductConstant;
+import com.example.gulimall.product.entity.ProductAttrValueEntity;
 import com.example.gulimall.product.service.AttrAttrgroupRelationService;
 import com.example.gulimall.product.vo.AttrEntityVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,7 @@ import com.example.gulimall.product.entity.AttrEntity;
 import com.example.gulimall.product.service.AttrService;
 import com.example.common.utils.PageUtils;
 import com.example.common.utils.R;
-
+import org.springframework.web.servlet.HandlerInterceptor;
 
 
 /**
@@ -30,6 +32,20 @@ public class AttrController {
     private AttrService attrService;
     @Autowired
     private AttrAttrgroupRelationService attrAttrgroupRelationService;
+
+    ///product/attr/update/{spuId}
+    @PostMapping("/update/{spuId}")
+    public R updateBySpuId(@PathVariable("spuId")Long spuId,@RequestBody List<ProductAttrValueEntity> list){
+        attrService.updateBySpuId(spuId,list);
+        return R.ok();
+    }
+
+    ///product/attr/base/listforspu/{spuId}
+    @GetMapping("/base/listforspu/{spuId}")
+    public R listForSpu(@PathVariable("spuId")Long spuId){
+        List<ProductAttrValueEntity> list= attrService.listForSpu(spuId);
+        return R.ok().put("data",list);
+    }
     ///product/attr/base/list/{catelogId}
     @GetMapping("/{type}/list/{catelogId}")
     public R baseList(@RequestParam Map<String, Object> params,

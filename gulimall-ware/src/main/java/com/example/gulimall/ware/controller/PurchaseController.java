@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.example.gulimall.ware.vo.DoneVo;
 import com.example.gulimall.ware.vo.MergeVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,11 @@ public class PurchaseController {
     private PurchaseService purchaseService;
 
     //TODO 完成采购
+    @PostMapping("/done")
+    public R purchaseDone(@RequestBody DoneVo doneVo){
+        purchaseService.purchaseDone(doneVo);
+        return R.ok();
+    }
 
     /**
      * 合并采购单
