@@ -1,4 +1,4 @@
-package com.example.gulimall.product.controller;
+package com.example.gulimall.product.app;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -18,8 +18,6 @@ import com.example.gulimall.product.entity.BrandEntity;
 import com.example.gulimall.product.service.BrandService;
 import com.example.common.utils.PageUtils;
 import com.example.common.utils.R;
-
-import javax.validation.Valid;
 
 
 /**

@@ -1,11 +1,10 @@
-package com.example.gulimall.product.controller;
+package com.example.gulimall.product.app;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.example.gulimall.product.entity.BrandEntity;
 import com.example.gulimall.product.vo.BrandEntityVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

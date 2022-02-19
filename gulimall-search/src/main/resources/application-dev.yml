@@ -4,3 +4,5 @@ spring:
       discovery:
         server-addr: localhost:8848
         group: dev
+server:
+  port: 12000

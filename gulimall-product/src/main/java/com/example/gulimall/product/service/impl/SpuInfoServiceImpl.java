@@ -1,10 +1,15 @@
 package com.example.gulimall.product.service.impl;
 
+import com.example.common.constant.ProductConstant;
 import com.example.common.to.MemberPrice;
 import com.example.common.to.SkuReductionTo;
 import com.example.common.to.SpuBoundTo;
+import com.example.common.to.es.SkuESModel;
+import com.example.common.utils.R;
 import com.example.gulimall.product.entity.*;
 import com.example.gulimall.product.feign.CouponFeignService;
+import com.example.gulimall.product.feign.SearchFeignService;
+import com.example.gulimall.product.feign.WareFeignService;
 import com.example.gulimall.product.service.*;
 import com.example.gulimall.product.vo.*;
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +53,14 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     private CouponFeignService couponFeignService;
     @Autowired
     private SpuInfoDescService spuInfoDescService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private BrandService brandService;
+    @Autowired
+    private WareFeignService wareFeignService;
+    @Autowired
+    private SearchFeignService searchFeignService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -187,6 +200,62 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public void up(Long spuId) {
+        //spuId查skuId
+        List<SkuInfoEntity> skuInfoEntityList = skuInfoService.list(new QueryWrapper<SkuInfoEntity>().eq("spu_id", spuId));
+        //spuId查attrs,是否需要检索[0-不需要，1-需要]
+        List<ProductAttrValueEntity> list = productAttrValueService.list(new QueryWrapper<ProductAttrValueEntity>().eq("spu_id", spuId));
+        List<SkuESModel.Attrs> attrsList = list.stream().map(productAttrValueEntity -> {
+            SkuESModel.Attrs attrs = new SkuESModel.Attrs();
+            BeanUtils.copyProperties(productAttrValueEntity, attrs);
+            return attrs;
+        }).filter(attrs -> {
+            AttrEntity attrEntity = attrService.getById(attrs.getAttrId());
+            return attrEntity.getSearchType()==1;
+        }).collect(Collectors.toList());
+        List<SkuESModel> skuESModelList = skuInfoEntityList.stream().map((skuInfoEntity -> {
+            SkuESModel skuESModel = new SkuESModel();
+            skuESModel.setSkuId(skuInfoEntity.getSkuId());
+            skuESModel.setSkuImg(skuInfoEntity.getSkuDefaultImg());
+            skuESModel.setSkuPrice(skuInfoEntity.getPrice());
+            skuESModel.setSkuTitle(skuInfoEntity.getSkuTitle());
+            //查库存 hasStock
+            Boolean hasStock=(Boolean)wareFeignService.hasStock(skuInfoEntity.getSkuId()).get("hasStock");
+            skuESModel.setHasStock(hasStock);
+            //TODO 计算热度评分 hotScore 0
+            skuESModel.setHotScore(0L);
+            //1.spuId查catalogId，分类信息
+            SpuInfoEntity spuInfo = getById(spuId);
+            skuESModel.setSpuId(spuId);
+            skuESModel.setBrandId(spuInfo.getBrandId());
+            skuESModel.setCatalogId(spuInfo.getCatalogId());
+            //一级分类名字
+            CategoryEntity category = categoryService.getById(spuInfo.getCatalogId());
+            skuESModel.setCatalogName(category.getName());
+            //2.spuId查brandId，品牌信息
+            BrandEntity brand = brandService.getById(spuInfo.getBrandId());
+            skuESModel.setBrandImg(brand.getLogo());
+            skuESModel.setBrandName(brand.getName());
+            skuESModel.setAttrs(attrsList);
+            return skuESModel;
+        })).collect(Collectors.toList());
+        // 发送给es进行保存
+        R up = searchFeignService.up(skuESModelList);
+        if((Integer)up.get("code")==0){
+            //远程调用成功,修改商品状态
+            spuInfoService.updateStatusById(spuId, ProductConstant.Status.PRODUCT_UP.getCode());
+        }else{
+            //远程调用失败
+            //TODO 重复调用，接口幂等性问题，重试机制
+        }
+    }
+
+    @Override
+    public void updateStatusById(Long spuId, int productUp) {
+        baseMapper.updateStatusById(spuId,productUp);
     }
 
 }

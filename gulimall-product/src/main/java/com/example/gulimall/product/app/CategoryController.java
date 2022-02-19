@@ -1,15 +1,13 @@
-package com.example.gulimall.product.controller;
+package com.example.gulimall.product.app;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.gulimall.product.entity.CategoryEntity;
 import com.example.gulimall.product.service.CategoryService;
-import com.example.common.utils.PageUtils;
 import com.example.common.utils.R;
 
 

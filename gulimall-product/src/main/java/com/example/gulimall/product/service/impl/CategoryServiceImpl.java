@@ -83,4 +83,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         categoryBrandRelationEntity.setCatelogName(category.getName());
         categoryBrandRelationService.update(categoryBrandRelationEntity,new UpdateWrapper<CategoryBrandRelationEntity>().eq("catelog_id",category.getCatId()));
     }
+
+    @Override
+    public List<CategoryEntity> getLevelOne() {
+        List<CategoryEntity> list = list(new QueryWrapper<CategoryEntity>().eq("cat_level", 1));
+        return list;
+    }
 }

@@ -1,6 +1,8 @@
 package com.example.gulimall.ware.service.impl;
 
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,6 +26,19 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public Boolean hasStock(Long skuId) {
+        List<WareSkuEntity> wareSkuEntityList = list(new QueryWrapper<WareSkuEntity>().eq("sku_id", skuId));
+        if(wareSkuEntityList!=null){
+            for(WareSkuEntity wareSkuEntity:wareSkuEntityList){
+                if(wareSkuEntity.getStock()!=0){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

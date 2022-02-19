@@ -19,4 +19,22 @@ public class ProductConstant {
             return msg;
         }
     }
+    public enum Status{
+        //      上架状态[0 - 下架，1 - 上架]
+        PRODUCT_NEW(0,"下架"),PRODUCT_UP(1,"上架");
+        int code;
+        String msg;
+        Status(int code,String msg){
+            this.code=code;
+            this.msg=msg;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+    }
 }
