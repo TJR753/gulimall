@@ -46,7 +46,10 @@ spring:
             - Path=/api/**
           filters:
             - RewritePath=/api/?(?<segment>.*), /renren-fast/$\{segment}
-
+        - id: host_route
+          uri: lb://gulimall-product
+          predicates:
+            - Host=**.gulimall.com
   #采样率，1为全部采集=1
   sleuth:
     sampler:
@@ -57,5 +60,7 @@ spring:
       type: web
 server:
   port: 88
-
+logging:
+  level:
+    root: debug
 

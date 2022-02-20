@@ -3,10 +3,12 @@ package com.example.gulimall.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.example.gulimall.product.entity.CategoryBrandRelationEntity;
 import com.example.gulimall.product.service.CategoryBrandRelationService;
+import com.example.gulimall.product.vo.Catalog2JsonVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,7 +88,34 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public List<CategoryEntity> getLevelOne() {
-        List<CategoryEntity> list = list(new QueryWrapper<CategoryEntity>().eq("cat_level", 1));
+        List<CategoryEntity> list = list(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
         return list;
+    }
+
+    @Override
+    public Map<String, List<Catalog2JsonVO>> getCatalogJson() {
+        List<CategoryEntity> levelOne = getLevelOne();
+        Map<String, List<Catalog2JsonVO>> collect = levelOne.stream().collect(Collectors.toMap(category1Entity -> category1Entity.getCatId().toString(), category1Entity -> {
+            //根据一级分类找所有二级分类
+            List<CategoryEntity> category2EntityList = list(new QueryWrapper<CategoryEntity>().eq("parent_cid", category1Entity.getCatId()));
+            //二级vo
+            List<Catalog2JsonVO> catalog2JsonVOList = category2EntityList.stream().map(category2Entity -> {
+                Catalog2JsonVO catalog2JsonVO = new Catalog2JsonVO(category2Entity.getParentCid().toString(), null, category2Entity.getCatId().toString(), category2Entity.getName());
+                //根据二级分类找所有三级分类
+                List<CategoryEntity> category3EntityList = list(new QueryWrapper<CategoryEntity>().eq("parent_cid", category2Entity.getCatId()));
+                //一级vo
+                List<Catalog2JsonVO.Catalog3JsonVO> catalog3JsonVOList = category3EntityList.stream().map(category3Entity -> {
+                    Catalog2JsonVO.Catalog3JsonVO catalog3JsonVO = new Catalog2JsonVO.Catalog3JsonVO(category2Entity.getCatId().toString(), category3Entity.getCatId().toString(), category3Entity.getName());
+                    return catalog3JsonVO;
+                }).collect(Collectors.toList());
+                catalog2JsonVO.setCatalog3List(catalog3JsonVOList);
+                return catalog2JsonVO;
+            }).collect(Collectors.toList());
+            //封装map
+//            Map<String, List<Catalog2JsonVO>> map = new HashMap<>();
+//            map.put(category1Entity.getCatId().toString(), catalog2JsonVOList);
+            return catalog2JsonVOList;
+        }));
+        return collect;
     }
 }
