@@ -94,15 +94,17 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<String, List<Catalog2JsonVO>> getCatalogJson() {
-        List<CategoryEntity> levelOne = getLevelOne();
+        //查出所有数据
+        List<CategoryEntity> list = list();
+        List<CategoryEntity> levelOne = getParentCid(list, 0L);
         Map<String, List<Catalog2JsonVO>> collect = levelOne.stream().collect(Collectors.toMap(category1Entity -> category1Entity.getCatId().toString(), category1Entity -> {
             //根据一级分类找所有二级分类
-            List<CategoryEntity> category2EntityList = list(new QueryWrapper<CategoryEntity>().eq("parent_cid", category1Entity.getCatId()));
+            List<CategoryEntity> category2EntityList = getParentCid(list,category1Entity.getParentCid());
             //二级vo
             List<Catalog2JsonVO> catalog2JsonVOList = category2EntityList.stream().map(category2Entity -> {
                 Catalog2JsonVO catalog2JsonVO = new Catalog2JsonVO(category2Entity.getParentCid().toString(), null, category2Entity.getCatId().toString(), category2Entity.getName());
                 //根据二级分类找所有三级分类
-                List<CategoryEntity> category3EntityList = list(new QueryWrapper<CategoryEntity>().eq("parent_cid", category2Entity.getCatId()));
+                List<CategoryEntity> category3EntityList = getParentCid(list,category2Entity.getParentCid());
                 //一级vo
                 List<Catalog2JsonVO.Catalog3JsonVO> catalog3JsonVOList = category3EntityList.stream().map(category3Entity -> {
                     Catalog2JsonVO.Catalog3JsonVO catalog3JsonVO = new Catalog2JsonVO.Catalog3JsonVO(category2Entity.getCatId().toString(), category3Entity.getCatId().toString(), category3Entity.getName());
@@ -111,11 +113,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 catalog2JsonVO.setCatalog3List(catalog3JsonVOList);
                 return catalog2JsonVO;
             }).collect(Collectors.toList());
-            //封装map
-//            Map<String, List<Catalog2JsonVO>> map = new HashMap<>();
-//            map.put(category1Entity.getCatId().toString(), catalog2JsonVOList);
             return catalog2JsonVOList;
         }));
         return collect;
+    }
+    private List<CategoryEntity> getParentCid(List<CategoryEntity> list,Long parentCid){
+        return list.stream().filter(item -> item.getParentCid() == parentCid).collect(Collectors.toList());
     }
 }
