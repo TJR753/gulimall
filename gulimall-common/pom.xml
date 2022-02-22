@@ -13,6 +13,16 @@
     <description>为每个服务提供的公共依赖</description>
 
     <dependencies>
+<!--        fastjson-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+<!--        redis-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
 <!--        devtools-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

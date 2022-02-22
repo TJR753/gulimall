@@ -9,6 +9,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
@@ -35,5 +36,13 @@ public class GuliMallProductApplicationTest {
     @Test
     public void selectTest(){
         System.out.println(brandService.getOne(new QueryWrapper<BrandEntity>().eq("brand_id", 1L)));
+    }
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Test
+    public void redisTest(){
+        stringRedisTemplate.opsForValue().set("a","a");
+        System.out.println(stringRedisTemplate.opsForValue().get("a"));
     }
 }
