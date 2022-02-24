@@ -40,9 +40,22 @@
         <druid-version>1.1.13</druid-version>
         <elasticsearch-version>7.4.2</elasticsearch-version>
         <fastjson-version>1.2.75</fastjson-version>
+        <redisson-version>3.16.8</redisson-version>
     </properties>
     <dependencyManagement>
         <dependencies>
+<!--            spring-cache-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-cache</artifactId>
+                <version>${spring-boot-starter-version}</version>
+            </dependency>
+            <!--            redisson-->
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson-version}</version>
+            </dependency>
 <!--            redis-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -53,7 +66,7 @@
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
-                <version>1.2.75</version>
+                <version>${fastjson-version}</version>
             </dependency>
             <!--        rest-high-level-client-->
             <dependency>

@@ -10,12 +10,11 @@ import com.example.gulimall.product.vo.Catalog2JsonVO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -99,7 +98,43 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return list;
     }
 
-    private List<CategoryEntity> getAllCatalogJson(){
+    private List<CategoryEntity> getAllCatalogJsonRedisLock(){
+        String json = stringRedisTemplate.opsForValue().get(RedisKey.CATALOG_JSON_KEY);
+        if(StringUtils.isEmpty(json)){
+            //缓存为空，从数据库中取
+            List<CategoryEntity> list=null;
+            //设置过期时间和获得锁
+            String uuid=UUID.randomUUID().toString();
+            //1.刚获得锁，断电，设置过期时间
+            //2.自己的锁过期，删除别人的锁
+            System.out.println("获取分布式锁");
+            Boolean lock = stringRedisTemplate.opsForValue().setIfAbsent("lock",uuid , 300, TimeUnit.SECONDS);
+            if(Boolean.TRUE.equals(lock)){
+                //从数据库获取数据
+                try{
+                    System.out.println("从数据库中查数据");
+                    list=list();
+                    stringRedisTemplate.opsForValue().set(RedisKey.CATALOG_JSON_KEY,JSON.toJSONString(list));
+                }finally {
+                    String script="if redis.call(\"get\",KEYS[1]) == ARGV[1]\n" +
+                            "then\n" +
+                            "    return redis.call(\"del\",KEYS[1])\n" +
+                            "else\n" +
+                            "    return 0\n" +
+                            "end";
+                    stringRedisTemplate.execute(new DefaultRedisScript<Long>(script),Arrays.asList("lock"),uuid);
+                }
+            }else{
+                //自旋
+                System.out.println("获取分布式锁失败，等待重试。。。");
+                return getAllCatalogJsonLocalLock();
+            }
+
+        }
+        return JSON.parseObject(json,new TypeReference<List<CategoryEntity>>(){});
+    }
+
+    private List<CategoryEntity> getAllCatalogJsonLocalLock(){
         String json = stringRedisTemplate.opsForValue().get(RedisKey.CATALOG_JSON_KEY);
         if(StringUtils.isEmpty(json)){
             //缓存为空，从数据库中取
@@ -121,7 +156,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     @Override
     public Map<String, List<Catalog2JsonVO>> getCatalogJson() {
         //查出所有数据
-        List<CategoryEntity> list = getAllCatalogJson();
+//        List<CategoryEntity> list = getAllCatalogJsonLocalLock();
+        List<CategoryEntity> list = getAllCatalogJsonRedisLock();
         List<CategoryEntity> levelOne = getParentCid(list, 0L);
         Map<String, List<Catalog2JsonVO>> collect = levelOne.stream().collect(Collectors.toMap(category1Entity -> category1Entity.getCatId().toString(), category1Entity -> {
             //根据一级分类找所有二级分类

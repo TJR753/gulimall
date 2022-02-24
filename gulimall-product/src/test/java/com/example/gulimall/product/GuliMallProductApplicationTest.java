@@ -7,6 +7,7 @@ import com.example.gulimall.product.service.BrandService;
 import org.junit.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.runner.RunWith;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -44,5 +45,13 @@ public class GuliMallProductApplicationTest {
     public void redisTest(){
         stringRedisTemplate.opsForValue().set("a","a");
         System.out.println(stringRedisTemplate.opsForValue().get("a"));
+    }
+
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @Test
+    public void redissonTest(){
+        System.out.println(redissonClient);
     }
 }

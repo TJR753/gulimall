@@ -13,6 +13,11 @@
     <description>为每个服务提供的公共依赖</description>
 
     <dependencies>
+        <!--            spring-cache-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
 <!--        fastjson-->
         <dependency>
             <groupId>com.alibaba</groupId>
