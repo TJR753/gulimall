@@ -45,41 +45,4 @@ public class IndexController {
         return categoryService.getCatalogJson();
     }
 
-    @ResponseBody
-    @GetMapping(path = "/get/lock")
-    public void getMyLock(){
-        RLock lock = redissonClient.getLock("myLock");
-        lock.lock();
-        try{
-            System.out.println("获得锁"+Thread.currentThread().getId());
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            lock.unlock();
-        }
-    }
-    @ResponseBody
-    @GetMapping(path = "/lock/read")
-    public void read(){
-        RReadWriteLock rwLock = redissonClient.getReadWriteLock("rwLock");
-        rwLock.readLock().lock();
-        try{
-            System.out.println(stringRedisTemplate.opsForValue().get("writeValue"));
-        }finally {
-            rwLock.readLock().unlock();
-        }
-    }
-    @ResponseBody
-    @GetMapping(path = "/lock/write")
-    public void write(){
-        RReadWriteLock rwLock = redissonClient.getReadWriteLock("rwLock");
-        rwLock.writeLock().lock();
-        try{
-            stringRedisTemplate.opsForValue().set("writeValue", JSON.toJSONString(UUID.randomUUID()));
-        }finally {
-            rwLock.writeLock().unlock();
-        }
-
-    }
 }

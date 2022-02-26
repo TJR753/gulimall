@@ -11,7 +11,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @MapperScan(value = "com/example/gulimall/product/dao")
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = "com.example.gulimall.product.feign")
-@EnableCaching
 public class GuliMallProductApplication {
 
     public static void main(String[] args) {

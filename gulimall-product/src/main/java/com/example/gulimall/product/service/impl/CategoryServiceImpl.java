@@ -8,7 +8,11 @@ import com.example.gulimall.product.redis.RedisKey;
 import com.example.gulimall.product.service.CategoryBrandRelationService;
 import com.example.gulimall.product.vo.Catalog2JsonVO;
 import org.apache.commons.lang.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -35,6 +39,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     private CategoryBrandRelationService categoryBrandRelationService;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -79,12 +85,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     @Override
+    @CacheEvict(value ={"category"},allEntries = true)
     public int removeMenuByIds(List<Long> asList) {
         //TODO 检查被引用的菜单项，无法被删除
         return baseMapper.deleteBatchIds(asList);
     }
 
     @Override
+    @CacheEvict(value ={"category"},allEntries = true)
     public void updateDetail(CategoryEntity category) {
         this.updateById(category);
         CategoryBrandRelationEntity categoryBrandRelationEntity = new CategoryBrandRelationEntity();
@@ -93,11 +101,30 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     @Override
+    @Cacheable(value = {"category"},key="#root.methodName")
     public List<CategoryEntity> getLevelOne(){
         List<CategoryEntity> list = list(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
         return list;
     }
 
+//    @Cacheable(value = {"category"},key = "#root.methodName")
+    public List<CategoryEntity> getAllCatalogJson(){
+        String json = stringRedisTemplate.opsForValue().get(RedisKey.CATALOG_JSON_KEY);
+        if(StringUtils.isEmpty(json)){
+            RLock lock = redissonClient.getLock("lock");
+            try{
+                lock.lock();
+                if(StringUtils.isEmpty(json)){
+                    return list();
+                }
+            }finally {
+                lock.unlock();
+            }
+        }
+        return JSON.parseObject(json,new TypeReference<List<CategoryEntity>>(){});
+    }
+
+    @Deprecated
     private List<CategoryEntity> getAllCatalogJsonRedisLock(){
         String json = stringRedisTemplate.opsForValue().get(RedisKey.CATALOG_JSON_KEY);
         if(StringUtils.isEmpty(json)){
@@ -127,13 +154,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             }else{
                 //自旋
                 System.out.println("获取分布式锁失败，等待重试。。。");
-                return getAllCatalogJsonLocalLock();
+                return getAllCatalogJsonRedisLock();
             }
 
         }
         return JSON.parseObject(json,new TypeReference<List<CategoryEntity>>(){});
     }
 
+    @Deprecated
     private List<CategoryEntity> getAllCatalogJsonLocalLock(){
         String json = stringRedisTemplate.opsForValue().get(RedisKey.CATALOG_JSON_KEY);
         if(StringUtils.isEmpty(json)){
@@ -154,10 +182,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     }
 
     @Override
+    @Cacheable(value = {"category"},key = "#root.methodName")
     public Map<String, List<Catalog2JsonVO>> getCatalogJson() {
         //查出所有数据
-//        List<CategoryEntity> list = getAllCatalogJsonLocalLock();
-        List<CategoryEntity> list = getAllCatalogJsonRedisLock();
+        List<CategoryEntity> list = getAllCatalogJson();
         List<CategoryEntity> levelOne = getParentCid(list, 0L);
         Map<String, List<Catalog2JsonVO>> collect = levelOne.stream().collect(Collectors.toMap(category1Entity -> category1Entity.getCatId().toString(), category1Entity -> {
             //根据一级分类找所有二级分类
