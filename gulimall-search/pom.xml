@@ -22,6 +22,12 @@
             <artifactId>gulimall-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+<!--        devtools-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
 <!--        rest-high-level-client-->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>

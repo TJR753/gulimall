@@ -4,5 +4,12 @@ spring:
       discovery:
         server-addr: localhost:8848
         group: dev
+  thymeleaf:
+    cache: false
+  devtools:
+    restart:
+      poll-interval: 180s
+      quiet-period: 1s
+
 server:
   port: 12000
